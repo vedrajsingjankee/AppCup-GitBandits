@@ -1,0 +1,2 @@
+# AppCup-GitBandits
+AI Agent
