@@ -1,24 +1,24 @@
 # AppCup-GitBandits
 AI Agent
 
-# Clone the repo
+## Clone the repo
 
-git clone https://github.com/vedrajsingjankee/AppCup-GitBandits.git
+`git clone https://github.com/vedrajsingjankee/AppCup-GitBandits.git`
 
-cd AppCup-GitBandits/
+`cd AppCup-GitBandits/`
 
-cd wanderwise/
-
-
-# Install dependencies
-
-npm install
+`cd wanderwise/`
 
 
-# Start development server
+## Install dependencies
 
-npm run dev
+`npm install`
 
 
-# Then open the link shown 
+## Start development server
+
+`npm run dev`
+
+
+## Then open the link shown 
 http://localhost:5173
