@@ -1,3 +1,4 @@
+// filepath: c:\Users\zahii\AppCup-GitBandits\wanderwise\src\components\Footer.jsx
 import React from 'react'
 
 export default function Footer(){

@@ -1,7 +1,8 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react';
+import Chatbot from './Chatbot';
 
-export default function Hero(){
-  const [q, setQ] = useState('')
+export default function Hero() {
+  const [q, setQ] = useState('');
 
   return (
     <section className="my-8">
@@ -22,7 +23,7 @@ export default function Hero(){
 
           <div className="mt-6 md:mt-0 md:w-2/3">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 hero-grid">
-              <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search city or country" className="col-span-1 sm:col-span-2 p-3 rounded-lg border border-white/30 dark:border-black/30 bg-white/80 dark:bg-black/40" />
+              <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search city or country" className="col-span-1 sm:col-span-2 p-3 rounded-lg border border-white/30 dark:border-black/30 bg-white/80 dark:bg-black/40" />
               <input placeholder="Date" className="col-span-1 p-3 rounded-lg border border-white/30 dark:border-black/30 bg-white/80 dark:bg-black/40" />
               <select className="col-span-1 p-3 rounded-lg border border-white/30 dark:border-black/30 bg-white/80 dark:bg-black/40">
                 <option>2 people</option>
@@ -32,8 +33,8 @@ export default function Hero(){
             </div>
 
             <div className="mt-4 flex items-center gap-3">
-              <button onClick={()=>alert('UI only')} className="px-6 py-3 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-500 text-white font-medium shadow-lg transform hover:-translate-y-0.5 transition">Search</button>
-              <button onClick={()=>{setQ('')}} className="px-4 py-3 rounded-lg border">Clear</button>
+              <button onClick={() => alert('UI only')} className="px-6 py-3 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-500 text-white font-medium shadow-lg transform hover:-translate-y-0.5 transition">Search</button>
+              <button onClick={() => { setQ('') }} className="px-4 py-3 rounded-lg border">Clear</button>
               <div className="ml-auto text-sm text-slate-500 dark:text-slate-300">Tip: try "Lisbon"</div>
             </div>
 
@@ -42,10 +43,10 @@ export default function Hero(){
               <div className="w-28 h-16 rounded-lg bg-gradient-to-br from-pink-200 to-amber-200 flex items-center justify-center text-sm font-semibold shadow-md animate-float tilt">City break</div>
               <div className="w-28 h-16 rounded-lg bg-gradient-to-br from-emerald-200 to-sky-200 flex items-center justify-center text-sm font-semibold shadow-md animate-float tilt">Nature</div>
             </div>
-
           </div>
         </div>
       </div>
+      <Chatbot />
     </section>
-  )
+  );
 }

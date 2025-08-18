@@ -1,12 +1,33 @@
-# React + Vite
+# AppCup-GitBandits
+AI Agent
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Clone the repo
 
-Currently, two official plugins are available:
+git clone https://github.com/vedrajsingjankee/AppCup-GitBandits.git
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+cd AppCup-GitBandits/
 
-## Expanding the ESLint configuration
+cd wanderwise/
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Install dependencies
+
+npm install
+
+## Start development server
+
+npm run dev
+
+## Then open the link shown 
+http://localhost:5173
+
+## Chatbot Integration
+
+This project includes an AI chatbot feature that can assist users with travel-related queries. The chatbot is integrated into the application through the `Chatbot` component located in `src/components/Chatbot.jsx`. 
+
+### Usage
+
+To use the chatbot, simply interact with the chat interface that appears on the screen. The chatbot utilizes an AI service for generating responses based on user input.
+
+### AI Service
+
+The AI service logic is encapsulated in `src/ai/chatbotService.js`, which handles API calls and processes responses from the AI model. Ensure that the necessary API keys and configurations are set up in this file for the chatbot to function correctly.

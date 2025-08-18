@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Header({dark, setDark}){
+export default function Header({ dark, setDark }) {
   return (
     <header className="sticky top-0 z-40 bg-white/40 dark:bg-black/30 backdrop-blur-md border-b border-white/20 dark:border-black/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,7 +21,7 @@ export default function Header({dark, setDark}){
           </nav>
 
           <div className="flex items-center gap-2">
-            <button onClick={()=>setDark(!dark)} aria-label="toggle theme" className="p-2 rounded-md border dark:border-white/10">
+            <button onClick={() => setDark(!dark)} aria-label="toggle theme" className="p-2 rounded-md border dark:border-white/10">
               {dark ? '🌙' : '☀️'}
             </button>
             <div className="md:hidden">
