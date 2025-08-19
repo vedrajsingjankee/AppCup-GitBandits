@@ -10,15 +10,30 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import P5TravelBg from './components/P5TravelBg.jsx';
 
-
-
 export default function App() {
   const [showChatbot, setShowChatbot] = useState(false);
   const [showSOS, setShowSOS] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
-  const openChat = () => { setShowSOS(false); setShowChatbot(true); };
-  const openSOS = () => { setShowChatbot(false); setShowSOS(true); };
-  const closeSOS = () => setShowSOS(false);
+  const handleIconClick = () => {
+    setShowOptions(!showOptions);
+  };
+
+  const handleOptionSelect = (option) => {
+    setShowOptions(false);
+    if (option === 'chat') {
+      setShowChatbot(true);
+      setShowSOS(false);
+    } else if (option === 'sos') {
+      setShowSOS(true);
+      setShowChatbot(false);
+    }
+  };
+
+  const handleClose = () => {
+    setShowChatbot(false);
+    setShowSOS(false);
+  };
 
   return (
     <div
@@ -46,7 +61,11 @@ export default function App() {
       <Footer />
 
       {/* floating menu icon */}
-      <ChatbotIcon onChat={openChat} onSOS={openSOS} />
+      <ChatbotIcon 
+        onClick={handleIconClick} 
+        showOptions={showOptions}
+        onOptionSelect={handleOptionSelect}
+      />
 
       {/* chat panel */}
       {showChatbot && (
@@ -57,7 +76,7 @@ export default function App() {
           <div style={{
             background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 24px 64px rgba(2,6,23,.35)'
           }}>
-            <Chatbot onClose={() => setShowChatbot(false)} />
+            <Chatbot onClose={handleClose} />
           </div>
         </div>
       )}
@@ -67,7 +86,7 @@ export default function App() {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
           style={{ background: 'rgba(2,6,23,0.55)' }}
-          onClick={closeSOS}
+          onClick={handleClose}
         >
           <div
             className="relative"
@@ -80,7 +99,7 @@ export default function App() {
               style={{ width: '100%', height: '100%', border: '0', borderRadius: 16, boxShadow: '0 24px 64px rgba(2,6,23,.5)' }}
             />
             <button
-              onClick={closeSOS}
+              onClick={handleClose}
               aria-label="Close"
               style={{
                 position: 'absolute', top: -12, right: -12,
@@ -95,6 +114,7 @@ export default function App() {
   );
 }
 
+// ... rest of your App.jsx code (PalmSVG, ImageUploader, etc.)
 // --- Static SVG Palm Tree for tropical vibe ---
 function PalmSVG() {
   return (
