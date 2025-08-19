@@ -2,25 +2,25 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './VoiceAidWidget.css'; // Import the extracted CSS
 
 const HELPLINES = {
-  MU:[
+  MU: [
     {id:"police",     label:"Emergency (Police)", number:"999",          aliases:["police","police emergency","call police","police hotline"]},
     {id:"emergency",  label:"Emergency (General)", number:"112",         aliases:["emergency","ambulance","fire","112","general emergency"]},
     {id:"samaritans", label:"Samaritans Mauritius (Emotional support)", href:"https://befriendersmauritius.org", aliases:["samaritans","emotional support","befrienders"]},
     {id:"moh",        label:"Ministry of Health (Hotline)", number:"8924", aliases:["ministry of health","health hotline","moh"]}
   ],
-  IN:[
+  IN: [
     {id:"emergency",  label:"Emergency", number:"112", aliases:["emergency","ambulance","fire","112"]},
     {id:"kiran",      label:"Kiran Mental Health", number:"18005990019", aliases:["kiran","mental health"]}
   ],
-  GB:[
+  GB: [
     {id:"emergency",  label:"Emergency", number:"999", aliases:["emergency","police","ambulance","fire","999"]},
     {id:"samaritans", label:"Samaritans", number:"116123", aliases:["samaritans","emotional support"]}
   ],
-  US:[
+  US: [
     {id:"emergency",  label:"Emergency", number:"911", aliases:["emergency","police","ambulance","fire","911"]},
     {id:"988",        label:"988 Suicide & Crisis Lifeline", number:"988", aliases:["988","suicide","crisis"]}
   ],
-  ZA:[
+  ZA: [
     {id:"emergency",  label:"Emergency", number:"112", aliases:["emergency","ambulance","fire","112"]},
     {id:"sadag",      label:"SADAG Suicide Crisis Line", number:"0800567567", aliases:["sadag","suicide","crisis"]}
   ],
@@ -90,10 +90,64 @@ const VoiceAidWidget = () => {
     setMessages((prevMessages) => [...prevMessages, { type: 'actions', data: buttons }]);
   }, []);
 
+  // Improved speech synthesis with more natural voice
   const speak = useCallback((text) => {
     if (!synth) return;
-    const u = new SpeechSynthesisUtterance(text);
-    synth.speak(u);
+    
+    // Cancel any ongoing speech
+    synth.cancel();
+    
+    // Create a more natural speaking pattern by splitting text into phrases
+    const phrases = text.split(/(?<=[.!?;])|(?<=,\s)/g).filter(p => p.trim().length > 0);
+    
+    let delay = 0;
+    const pauseDuration = 150; // ms pause between phrases
+    
+    phrases.forEach((phrase, index) => {
+      setTimeout(() => {
+        if (phrase.trim()) {
+          const u = new SpeechSynthesisUtterance(phrase.trim());
+          
+          // Try to select a more natural voice
+          const voices = synth.getVoices();
+          const preferredVoices = [
+            'Google UK English Female',
+            'Google US English',
+            'Microsoft Hazel - English (Great Britain)',
+            'Microsoft David - English (United States)',
+            'Microsoft Zira - English (United States)',
+            'Microsoft Susan - English (Great Britain)',
+            'Samantha',
+            'Karen',
+            'Daniel',
+            'Alex' // macOS voice, often high quality
+          ];
+          
+          // Find the first available preferred voice
+          const selectedVoice = voices.find(voice =>
+            preferredVoices.includes(voice.name)
+          ) || voices.find(voice => voice.lang.startsWith('en')); // Use startsWith for broader English match
+          
+          if (selectedVoice) {
+            u.voice = selectedVoice;
+          }
+          
+          // Set more natural parameters
+          u.rate = 0.9; // Slightly slower for a more measured pace
+          u.pitch = 1.0; // Normal pitch
+          u.volume = 0.8; // Slightly lower volume for a softer tone
+          
+          // Add subtle variations for more natural sound
+          if (index % 3 === 0) u.rate = 0.88; // More variation
+          if (index % 5 === 0) u.pitch = 1.03; // More variation
+          
+          synth.speak(u);
+        }
+      }, delay);
+      
+      // Add pause between phrases
+      delay += pauseDuration;
+    });
   }, [synth]);
 
   const digitsSpaced = useCallback((num) => (num || "").split("").join(" "), []);
