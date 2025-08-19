@@ -1,36 +1,95 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './VoiceAidWidget.css'; // Import the extracted CSS
+import './VoiceAidWidget.css';
 
 const HELPLINES = {
   MU: [
-    {id:"police",     label:"Emergency (Police)", number:"999",          aliases:["police","police emergency","call police","police hotline"]},
-    {id:"emergency",  label:"Emergency (General)", number:"112",         aliases:["emergency","ambulance","fire","112","general emergency"]},
+    {id:"police", label:"Emergency (Police)", number:"999", aliases:["police","police emergency","call police","police hotline"]},
+    {id:"emergency", label:"Emergency (General)", number:"112", aliases:["emergency","ambulance","fire","112","general emergency"]},
     {id:"samaritans", label:"Samaritans Mauritius (Emotional support)", href:"https://befriendersmauritius.org", aliases:["samaritans","emotional support","befrienders"]},
-    {id:"moh",        label:"Ministry of Health (Hotline)", number:"8924", aliases:["ministry of health","health hotline","moh"]}
+    {id:"moh", label:"Ministry of Health (Hotline)", number:"8924", aliases:["ministry of health","health hotline","moh"]}
   ],
   IN: [
-    {id:"emergency",  label:"Emergency", number:"112", aliases:["emergency","ambulance","fire","112"]},
-    {id:"kiran",      label:"Kiran Mental Health", number:"18005990019", aliases:["kiran","mental health"]}
+    {id:"emergency", label:"Emergency", number:"112", aliases:["emergency","ambulance","fire","112"]},
+    {id:"kiran", label:"Kiran Mental Health", number:"18005990019", aliases:["kiran","mental health"]}
   ],
   GB: [
-    {id:"emergency",  label:"Emergency", number:"999", aliases:["emergency","police","ambulance","fire","999"]},
+    {id:"emergency", label:"Emergency", number:"999", aliases:["emergency","police","ambulance","fire","999"]},
     {id:"samaritans", label:"Samaritans", number:"116123", aliases:["samaritans","emotional support"]}
   ],
   US: [
-    {id:"emergency",  label:"Emergency", number:"911", aliases:["emergency","police","ambulance","fire","911"]},
-    {id:"988",        label:"988 Suicide & Crisis Lifeline", number:"988", aliases:["988","suicide","crisis"]}
+    {id:"emergency", label:"Emergency", number:"911", aliases:["emergency","police","ambulance","fire","911"]},
+    {id:"988", label:"988 Suicide & Crisis Lifeline", number:"988", aliases:["988","suicide","crisis"]}
   ],
   ZA: [
-    {id:"emergency",  label:"Emergency", number:"112", aliases:["emergency","ambulance","fire","112"]},
-    {id:"sadag",      label:"SADAG Suicide Crisis Line", number:"0800567567", aliases:["sadag","suicide","crisis"]}
+    {id:"emergency", label:"Emergency", number:"112", aliases:["emergency","ambulance","fire","112"]},
+    {id:"sadag", label:"SADAG Suicide Crisis Line", number:"0800567567", aliases:["sadag","suicide","crisis"]}
   ],
 };
 
 const CALMING = [
-  "Let's do 4-7-8 breathing. Inhale 4… hold 7… exhale 8. I'll count with you.",
-  "Try 5-4-3-2-1 grounding: 5 things you can see, 4 touch, 3 hear, 2 smell, 1 taste.",
-  "Box breathing. Inhale 4… hold 4… exhale 4… hold 4. Repeat a few rounds."
+  "Let's do 4-7-8 breathing. Inhale for 4 seconds… hold for 7… exhale for 8. I'll count with you.",
+  "Try 5-4-3-2-1 grounding: Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, 1 you can taste.",
+  "Box breathing: Inhale for 4 seconds… hold for 4… exhale for 4… hold for 4. Let's do this together."
 ];
+
+// Simple SVG Icons
+const MicIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+    <line x1="12" y1="19" x2="12" y2="23"></line>
+    <line x1="8" y1="23" x2="16" y2="23"></line>
+  </svg>
+);
+
+const MicOffIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="1" y1="1" x2="23" y2="23"></line>
+    <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
+    <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
+    <line x1="12" y1="19" x2="12" y2="23"></line>
+    <line x1="8" y1="23" x2="16" y2="23"></line>
+  </svg>
+);
+
+const MapPinIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+    <circle cx="12" cy="10" r="3"></circle>
+  </svg>
+);
+
+const PhoneIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+  </svg>
+);
+
+const HeartIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+  </svg>
+);
+
+const SendIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="22" y1="2" x2="11" y2="13"></line>
+    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+  </svg>
+);
+
+const XIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
+
+const MessageCircleIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+  </svg>
+);
 
 const VoiceAidWidget = () => {
   // State variables
@@ -39,6 +98,7 @@ const VoiceAidWidget = () => {
   const [typedMessage, setTypedMessage] = useState('');
   const [country, setCountry] = useState('MU');
   const [autoAnnounce, setAutoAnnounce] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   // State for internal logic
   const [askedLocation, setAskedLocation] = useState(false);
@@ -79,6 +139,11 @@ const VoiceAidWidget = () => {
 
   const closePanel = useCallback(() => {
     setIsOpen(false);
+    if (recognizing.current) {
+      recognition.current?.stop();
+      recognizing.current = false;
+      setIsListening(false);
+    }
   }, []);
 
   // Helper functions
@@ -90,7 +155,7 @@ const VoiceAidWidget = () => {
     setMessages((prevMessages) => [...prevMessages, { type: 'actions', data: buttons }]);
   }, []);
 
-  // Improved speech synthesis with more natural voice
+  // Enhanced speech synthesis with more natural voice
   const speak = useCallback((text) => {
     if (!synth) return;
     
@@ -101,7 +166,7 @@ const VoiceAidWidget = () => {
     const phrases = text.split(/(?<=[.!?;])|(?<=,\s)/g).filter(p => p.trim().length > 0);
     
     let delay = 0;
-    const pauseDuration = 150; // ms pause between phrases
+    const pauseDuration = 200; // ms pause between phrases
     
     phrases.forEach((phrase, index) => {
       setTimeout(() => {
@@ -112,15 +177,13 @@ const VoiceAidWidget = () => {
           const voices = synth.getVoices();
           const preferredVoices = [
             'Google UK English Female',
-            'Google US English',
-            'Microsoft Hazel - English (Great Britain)',
-            'Microsoft David - English (United States)',
-            'Microsoft Zira - English (United States)',
-            'Microsoft Susan - English (Great Britain)',
+            'Google US English Female',
+            'Microsoft Zira Desktop - English (United States)',
+            'Microsoft Hazel Desktop - English (Great Britain)',
             'Samantha',
             'Karen',
-            'Daniel',
-            'Alex' // macOS voice, often high quality
+            'Moira',
+            'Tessa'
           ];
           
           // Find the first available preferred voice
@@ -132,14 +195,14 @@ const VoiceAidWidget = () => {
             u.voice = selectedVoice;
           }
           
-          // Set more natural parameters
-          u.rate = 0.9; // Slightly slower for a more measured pace
-          u.pitch = 1.0; // Normal pitch
-          u.volume = 0.8; // Slightly lower volume for a softer tone
+          // Set more natural parameters for less robotic sound
+          u.rate = 0.85; // Slower, more measured pace
+          u.pitch = 1.1; // Slightly higher pitch for friendlier tone
+          u.volume = 0.9; // Normal volume
           
           // Add subtle variations for more natural sound
-          if (index % 3 === 0) u.rate = 0.88; // More variation
-          if (index % 5 === 0) u.pitch = 1.03; // More variation
+          if (index % 3 === 0) u.rate = 0.82; // Even slower for emphasis
+          if (index % 5 === 0) u.pitch = 1.15; // Slight pitch variation
           
           synth.speak(u);
         }
@@ -472,10 +535,6 @@ const VoiceAidWidget = () => {
   useEffect(() => {
     if (!SpeechRecognition) {
       addMsg("Speech recognition not supported in this browser. You can type instead.", "bot");
-      if (micBtnRef.current) {
-        micBtnRef.current.disabled = true;
-        micBtnRef.current.textContent = "Not Supported";
-      }
       return;
     }
 
@@ -499,18 +558,13 @@ const VoiceAidWidget = () => {
     };
 
     recognition.current.onerror = () => {
-      if (micBtnRef.current) micBtnRef.current.classList.remove('live');
+      setIsListening(false);
       recognizing.current = false;
-      // interimEl.current.remove(); interimEl.current = null; // Needs React adaptation
     };
 
     recognition.current.onend = () => {
-      if (micBtnRef.current) {
-        micBtnRef.current.classList.remove('live');
-        micBtnRef.current.textContent = "🎤 Start";
-      }
+      setIsListening(false);
       recognizing.current = false;
-      // interimEl.current.remove(); interimEl.current = null; // Needs React adaptation
     };
 
     // Cleanup function
@@ -553,111 +607,236 @@ const VoiceAidWidget = () => {
     };
   }, [autoAnnounce, addMsg, describeAndSpeakFromPosition]);
 
+  // Toggle speech recognition
+  const toggleSpeechRecognition = useCallback(() => {
+    if (!recognition.current) return;
+
+    if (!recognizing.current) {
+      recognizing.current = true;
+      setIsListening(true);
+      recognition.current.start();
+      setTimeout(() => {
+        if (recognizing.current) recognition.current.stop();
+      }, 8000);
+    } else {
+      recognition.current.stop();
+    }
+  }, []);
 
   return (
     <>
-      <div className="widget-launcher" onClick={openPanel}>
-        <div className="pulse"></div><strong>SOS • Voice</strong>
+      {/* Floating Launcher Button */}
+      <div 
+        className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg cursor-pointer transition-all duration-300 transform hover:scale-105 z-50 flex items-center gap-2"
+        onClick={openPanel}
+      >
+        <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+        <span className="font-semibold flex items-center gap-2">
+          <MessageCircleIcon />
+          SOS Voice
+        </span>
       </div>
 
-      <div className={`panel-wrap ${isOpen ? 'open' : ''}`}>
-        <div className="panel">
-          <div className="panel-header">
-            <div className="brand">
-              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: '#87b7ff', boxShadow: '0 0 10px #87b7ff60' }}></span>
-              Calm Assist
-            </div>
-            <button className="close-btn" onClick={closePanel}>✕</button>
+      {/* Main Panel */}
+      <div className={`fixed bottom-24 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col transition-all duration-300 transform ${
+        isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
+      } z-50`}>
+        {/* Header */}
+        <div className="bg-gray-800 text-white p-4 rounded-t-2xl flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+            <h2 className="font-bold text-lg">Calm Assist</h2>
           </div>
+          <button 
+            onClick={closePanel}
+            className="text-gray-300 hover:text-white transition-colors"
+          >
+            <XIcon />
+          </button>
+        </div>
 
-          <div className="scroll" id="log" role="log" aria-live="polite" aria-atomic="false" ref={logRef}>
-            {messages.map((msg, index) => (
-              <div key={index} className="row">
-                {msg.type === 'text' && <div className={`msg ${msg.who === 'me' ? 'me' : 'bot'}`}>{msg.text}</div>}
-                {msg.type === 'actions' && (
-                  <div className="action-row">
-                    {msg.data.map((action, actionIndex) => (
-                      <button key={actionIndex} className="small-btn" onClick={action.onClick}>
-                        {action.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {msg.type === 'helplines' && (
-                  <div className="help-card">
-                    <strong>Helplines:</strong>
-                    {msg.data.map((it, helplineIndex) => (
-                      <div key={helplineIndex} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginTop: '8px' }}>
-                        <div>{it.number ? `${it.label}: ${msg.digitsSpaced(it.number)}` : `${it.label} (website)`}</div>
-                        <button className="small-btn" onClick={() => msg.callHelpline(it)}>
-                          {it.number ? 'Call' : 'Open'}
-                        </button>
+        {/* Messages Area */}
+        <div 
+          ref={logRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
+        >
+          {messages.map((msg, index) => (
+            <div key={index} className="space-y-2">
+              {msg.type === 'text' && (
+                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                  msg.who === 'me' 
+                    ? 'bg-blue-500 text-white ml-auto rounded-br-md' 
+                    : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md'
+                }`}>
+                  {msg.text}
+                </div>
+              )}
+              
+              {msg.type === 'actions' && msg.data && (
+                <div className="flex flex-wrap gap-2 p-2">
+                  {msg.data.map((action, actionIndex) => (
+                    <button
+                      key={actionIndex}
+                      onClick={action.onClick}
+                      className="px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-full text-sm transition-colors"
+                    >
+                      {action.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              {msg.type === 'helplines' && (
+                <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3">
+                  <h3 className="font-bold text-gray-800">Helplines:</h3>
+                  {msg.data.map((it, helplineIndex) => (
+                    <div key={helplineIndex} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                      <div>
+                        <div className="font-medium text-gray-800">{it.label}</div>
+                        <div className="text-sm text-gray-600">
+                          {it.number ? digitsSpaced(it.number) : 'Website'}
+                        </div>
                       </div>
-                    ))}
+                      <button
+                        onClick={() => msg.callHelpline(it)}
+                        className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm transition-colors flex items-center gap-1"
+                      >
+                        <PhoneIcon />
+                        {it.number ? 'Call' : 'Open'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {msg.type === 'callLink' && (
+                <div className="p-2">
+                  <a
+                    href={msg.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full text-sm transition-colors"
+                  >
+                    {msg.label}
+                  </a>
+                </div>
+              )}
+              
+              {msg.type === 'map' && (
+                <div className="bg-white border border-gray-200 rounded-xl p-4">
+                  <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <MapPinIcon />
+                    Your Location
+                  </h3>
+                  {msg.addressText && (
+                    <p className="text-gray-600 mb-2">{msg.addressText}</p>
+                  )}
+                  <p className="text-sm text-gray-500 mb-2">
+                    Coords: {msg.lat.toFixed(5)}, {msg.lon.toFixed(5)}
+                  </p>
+                  <a
+                    href={`https://www.google.com/maps?q=${msg.lat},${msg.lon}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 text-sm underline"
+                  >
+                    Open in Google Maps
+                  </a>
+                  <div className="mt-3 rounded-lg overflow-hidden">
+                    <iframe
+                      className="w-full h-48 border-0"
+                      src={`https://www.google.com/maps?q=${msg.lat},${msg.lon}&z=16&output=embed`}
+                      title="Location map"
+                    ></iframe>
                   </div>
-                )}
-                {msg.type === 'callLink' && (
-                  <div className="action-row">
-                    <a className="small-btn" href={msg.href} target="_blank" rel="noopener noreferrer">
-                      {msg.label}
-                    </a>
-                  </div>
-                )}
-                {msg.type === 'map' && (
-                  <div className="help-card">
-                    <strong>Your location</strong><br />
-                    {msg.addressText && <>{msg.addressText}<br /></>}
-                    Coords: {msg.lat.toFixed(5)}, {msg.lon.toFixed(5)}<br />
-                    <a href={`https://www.google.com/maps?q=${msg.lat},${msg.lon}`} target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
-                    <iframe className="map" src={`https://www.google.com/maps?q=${msg.lat},${msg.lon}&z=16&output=embed`} title="Location map"></iframe>
-                  </div>
-                )}
-              </div>
-            ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Controls */}
+        <div className="p-4 bg-white border-t border-gray-200 space-y-3">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={toggleSpeechRecognition}
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                isListening
+                  ? 'bg-red-500 hover:bg-red-600 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+              }`}
+            >
+              {isListening ? <MicOffIcon /> : <MicIcon />}
+              {isListening ? 'Listening...' : 'Speak'}
+            </button>
+            
+            <button
+              onClick={doCalm}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-full text-sm font-medium transition-colors"
+            >
+              <HeartIcon />
+              Calm Me
+            </button>
+            
+            <button
+              onClick={() => askShareLocationFlow()}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-purple-100 hover:bg-purple-200 text-purple-800 rounded-full text-sm font-medium transition-colors"
+            >
+              <PhoneIcon />
+              Helplines
+            </button>
           </div>
-
-          <div className="controls">
-            <button className="control-btn mic" ref={micBtnRef} onClick={() => {
-              if (!recognition.current) return;
-
-              if (!recognizing.current) {
-                recognizing.current = true;
-                micBtnRef.current.textContent = "🎤 Listening…";
-                micBtnRef.current.classList.add('live');
-                recognition.current.start();
-                setTimeout(() => {
-                  if (recognizing.current) recognition.current.stop();
-                }, 8000);
-              } else {
-                recognition.current.stop();
-              }
-            }}>🎤 Start</button>
-            <button className="control-btn" onClick={doCalm}>Calm me</button>
-            <button className="control-btn" onClick={() => askShareLocationFlow()}>Helplines</button>
-
-            <button className="control-btn" onClick={() => {
-              if (window._lastPos) return describeAndSpeakFromPosition(window._lastPos);
-              askShareLocationFlow("Would you like me to show and say where you are? ");
-            }}>Where am I?</button>
-            <label className="small-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <input type="checkbox" checked={autoAnnounce} onChange={(e) => setAutoAnnounce(e.target.checked)} /> Auto announce
+          
+          <div className="flex flex-wrap gap-2 items-center">
+            <button
+              onClick={() => {
+                if (window._lastPos) return describeAndSpeakFromPosition(window._lastPos);
+                askShareLocationFlow("Would you like me to show and say where you are? ");
+              }}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-green-100 hover:bg-green-200 text-green-800 rounded-full text-sm font-medium transition-colors"
+            >
+              <MapPinIcon />
+              Where Am I?
+            </button>
+            
+            <label className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm font-medium transition-colors cursor-pointer">
+              <input
+                type="checkbox"
+                checked={autoAnnounce}
+                onChange={(e) => setAutoAnnounce(e.target.checked)}
+                className="mr-1"
+              />
+              Auto Announce
             </label>
-
-            <select className="select" value={country} onChange={(e) => setCountry(e.target.value)} id="country">
+            
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm font-medium transition-colors"
+            >
               <option value="MU">🇲🇺 Mauritius</option>
               <option value="IN">🇮🇳 India</option>
               <option value="GB">🇬🇧 UK</option>
               <option value="US">🇺🇸 USA</option>
               <option value="ZA">🇿🇦 South Africa</option>
             </select>
+          </div>
+          
+          <div className="flex gap-2">
             <input
-              className="field"
-              placeholder="Type if you prefer…"
+              type="text"
               value={typedMessage}
               onChange={(e) => setTypedMessage(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { handleUserText(typedMessage.trim()); setTypedMessage(''); } }}
+              placeholder="Type your message..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button className="control-btn" onClick={() => { handleUserText(typedMessage.trim()); setTypedMessage(''); }}>Send</button>
+            <button
+              onClick={() => { handleUserText(typedMessage.trim()); setTypedMessage(''); }}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors"
+            >
+              <SendIcon />
+            </button>
           </div>
         </div>
       </div>
