@@ -45,9 +45,9 @@ export default function ChatbotIcon({ onClick, showOptions, onOptionSelect }) {
             💬 Chat Assistant
           </button>
           <button 
-            className="option-button sos"
-            onClick={() => onOptionSelect('sos')}
-            aria-label="Emergency SOS"
+            className="option-button voice"
+            onClick={() => onOptionSelect('voice')}
+            aria-label="Voice Aid"
             style={{
               display: 'block',
               width: '100%',
@@ -55,22 +55,22 @@ export default function ChatbotIcon({ onClick, showOptions, onOptionSelect }) {
               margin: '4px 0',
               border: 'none',
               borderRadius: '8px',
-              background: '#fee2e2',
-              color: '#dc2626',
+              background: '#dcfce7',
+              color: '#166534',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
               fontWeight: 500,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#fecaca';
+              e.currentTarget.style.background = '#bbf7d0';
               e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#fee2e2';
+              e.currentTarget.style.background = '#dcfce7';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            🆘 SOS Emergency
+            🎤 Voice Aid
           </button>
         </div>
       )}

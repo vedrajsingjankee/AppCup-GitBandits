@@ -5,6 +5,7 @@ import Destinations from './components/Destinations';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import ChatbotIcon from './components/ChatbotIcon';
+import VoiceAidWidget from './components/VoiceAidWidget';
 import { GoogleGenAI } from "https://esm.sh/@google/genai";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -12,7 +13,7 @@ import P5TravelBg from './components/P5TravelBg.jsx';
 
 export default function App() {
   const [showChatbot, setShowChatbot] = useState(false);
-  const [showSOS, setShowSOS] = useState(false);
+  const [showVoiceAid, setShowVoiceAid] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
   const handleIconClick = () => {
@@ -23,16 +24,16 @@ export default function App() {
     setShowOptions(false);
     if (option === 'chat') {
       setShowChatbot(true);
-      setShowSOS(false);
-    } else if (option === 'sos') {
-      setShowSOS(true);
+      setShowVoiceAid(false);
+    } else if (option === 'voice') {
+      setShowVoiceAid(true);
       setShowChatbot(false);
     }
   };
 
   const handleClose = () => {
     setShowChatbot(false);
-    setShowSOS(false);
+    setShowVoiceAid(false);
   };
 
   return (
@@ -81,8 +82,8 @@ export default function App() {
         </div>
       )}
 
-      {/* SOS overlay (iframe embedding public/sos.html) */}
-      {showSOS && (
+      {/* Voice Aid Widget */}
+      {showVoiceAid && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
           style={{ background: 'rgba(2,6,23,0.55)' }}
@@ -93,11 +94,7 @@ export default function App() {
             style={{ width: 'min(420px, 92vw)', height: 'min(640px, 88vh)' }}
             onClick={(e)=> e.stopPropagation()}
           >
-            <iframe
-              src="/sos.html"
-              title="SOS Voice"
-              style={{ width: '100%', height: '100%', border: '0', borderRadius: 16, boxShadow: '0 24px 64px rgba(2,6,23,.5)' }}
-            />
+            <VoiceAidWidget onClose={handleClose} />
             <button
               onClick={handleClose}
               aria-label="Close"
