@@ -1,4 +1,4 @@
-const API_KEY = 'API-KEY-HERE'; // Replace with your Gemini API key
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY; // Correctly access the environment variable
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 export async function getChatbotResponse(message) {
@@ -18,7 +18,6 @@ export async function getChatbotResponse(message) {
     }
 
     const data = await response.json();
-    // Gemini's response structure
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
     return reply || "Hi, I'm WanderWise! How can I help you plan your trip?";
   } catch (error) {

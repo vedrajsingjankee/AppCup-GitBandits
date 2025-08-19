@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Voice Aid Widget</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0b1220; --soft:rgba(255,255,255,.08); --text:#eaf0ff; --accent:#87b7ff; --good:#59d38c; }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 800px at 80% 20%,#13213c,#0b1220);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);min-height:100vh
+  }
+  .widget-launcher{
+    position:fixed;right:20px;bottom:20px;display:inline-flex;gap:10px;align-items:center;
+    padding:12px 16px;border-radius:999px;background:linear-gradient(135deg,#1c2b4f,#12203a);
+    color:#cfe2ff;border:1px solid #294373;box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);
+    cursor:pointer;z-index:9999
+  }
+  .widget-launcher:hover{filter:brightness(1.07)}
+  .pulse{width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 rgba(89,211,140,.7);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(89,211,140,.7)}70%{box-shadow:0 0 0 12px rgba(89,211,140,0)}100%{box-shadow:0 0 0 0 rgba(89,211,140,0)}}
+  .panel-wrap{
+    position:fixed;right:20px;bottom:80px;width:360px;max-width:calc(100vw - 40px);
+    transform-origin:100% 100%;scale:.96;opacity:0;pointer-events:none;transition:.18s ease;z-index:9998
+  }
+  .panel-wrap.open{scale:1;opacity:1;pointer-events:auto}
+  .panel{
+    backdrop-filter:blur(14px);background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.16);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)
+  }
+  .panel-header{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;
+    background:linear-gradient(180deg,rgba(255,255,255,.16),transparent)
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2px}
+  .pill{padding:2px 8px;border-radius:999px;font-size:11px;background:rgba(135,183,255,.16);border:1px solid rgba(135,183,255,.35);color:#cfe2ff}
+  .close-btn{background:transparent;color:#cbd8ff;border:1px solid rgba(255,255,255,.2);width:28px;height:28px;border-radius:8px;cursor:pointer}
+  .scroll{padding:14px 16px;max-height:54vh;overflow:auto}
+  .row{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
+  .msg{padding:10px 12px;background:var(--soft);border:1px solid rgba(255,255,255,.12);border-radius:12px;line-height:1.4;flex:1;white-space:pre-wrap}
+  .me{border-color:rgba(255,255,255,.22);background:rgba(135,183,255,.10)}
+  .bot{background:rgba(255,255,255,.07)}
+  .me.interim{opacity:.7;font-style:italic}
+  .controls{display:flex;gap:10px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.14);align-items:center;flex-wrap:wrap}
+  .control-btn{flex:none;padding:10px 12px;border-radius:12px;cursor:pointer;background:#152441;color:#d9e7ff;border:1px solid #2a4373}
+  .control-btn:hover{filter:brightness(1.08)} .mic.live{background:#1b3e2a;border-color:#2e7d55;color:#d6ffe9}
+  .field{flex:1;min-width:160px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;color:var(--text)}
+  .select{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25);color:var(--text)}
+  .help-card{margin-top:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}
+  .help-card a{color:#bfe0ff;text-decoration:none}.help-card a:hover{text-decoration:underline}
+  .action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .small-btn{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25);color:var(--text);cursor:pointer}
+  iframe.map{width:100%;height:220px;border:0;border-radius:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="widget-launcher" id="launcher">
+  <div class="pulse"></div><strong>SOS • Voice</strong>
+</div>
+
+<div class="panel-wrap" id="panel">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="brand">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#87b7ff;box-shadow:0 0 10px #87b7ff60;"></span>
+        Calm Assist 
+      </div>
+      <button class="close-btn" id="closeBtn">✕</button>
+    </div>
+
+    <div class="scroll" id="log"></div>
+
+    <div class="controls">
+      <button class="control-btn mic" id="micBtn">🎤 Start</button>
+      <button class="control-btn" id="calmBtn">Calm me</button>
+      <button class="control-btn" id="helpBtn">Helplines</button>
+      <select class="select" id="country">
+        <option value="MU" selected>🇲🇺 Mauritius</option>
+        <option value="IN">🇮🇳 India</option>
+        <option value="GB">🇬🇧 UK</option>
+        <option value="US">🇺🇸 USA</option>
+        <option value="ZA">🇿🇦 South Africa</option>
+      </select>
+      <input class="field" id="typed" placeholder="Type if you prefer…" />
+      <button class="control-btn" id="sendBtn">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- elements ----------
+  const launcher = document.getElementById('launcher');
+  const panel = document.getElementById('panel');
+  const closeBtn = document.getElementById('closeBtn');
+  const log = document.getElementById('log');
+  const micBtn = document.getElementById('micBtn');
+  const calmBtn = document.getElementById('calmBtn');
+  const helpBtn = document.getElementById('helpBtn');
+  const sendBtn = document.getElementById('sendBtn');
+  const typed = document.getElementById('typed');
+  const countrySel = document.getElementById('country');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const synth = window.speechSynthesis;
+
+  // --- state ---
+  const state = {
+    askedLocation: false,
+    haveLocation: false,
+    offeredHelplines: false,
+    showedHelplines: false,
+    gettingLocation: false,
+    awaitingLocationConsent: false // NEW: when true, "yes" will fetch location
+  };
+
+  let lastLocation = null;   // {lat, lon, accuracy, address?, country?}
+  let lastCountry = null;
+
+  // ---------- helpers ----------
+  function addMsg(text, who='bot') {
+    const row = document.createElement('div'); row.className = 'row';
+    const msg = document.createElement('div'); msg.className = 'msg ' + (who==='me'?'me':'bot');
+    msg.textContent = text; row.appendChild(msg); log.appendChild(row); log.scrollTop = log.scrollHeight;
+    return msg;
+  }
+  function addActions(buttons=[]) {
+    const wrap = document.createElement('div'); wrap.className='action-row';
+    buttons.forEach(({label, onClick})=>{
+      const b=document.createElement('button'); b.className='small-btn'; b.textContent=label; b.onclick=onClick; wrap.appendChild(b);
+    });
+    log.appendChild(wrap); log.scrollTop = log.scrollHeight; return wrap;
+  }
+  function speak(text){ if(!synth) return; const u=new SpeechSynthesisUtterance(text); synth.speak(u); }
+
+  function openPanel(){
+    panel.classList.add('open');
+    state.askedLocation=false; state.haveLocation=false; state.offeredHelplines=false; state.showedHelplines=false;
+    state.gettingLocation=false; state.awaitingLocationConsent=false;
+    lastLocation=null; lastCountry=null;
+
+    const g="I'm here. How can I help you?";
+    addMsg(g,'bot'); speak(g);
+  }
+  function closePanel(){ panel.classList.remove('open'); }
+  launcher.addEventListener('click', openPanel); closeBtn.addEventListener('click', closePanel);
+
+  // ---------- helplines ----------
+  const HELPLINES = {
+    MU:[{label:"Emergency (Police)",number:"999"},{label:"Emergency (General)",number:"112"},
+        {label:"Samaritans Mauritius (Emotional support)",href:"https://befriendersmauritius.org"},
+        {label:"Ministry of Health (Hotline)",number:"8924"}],
+    IN:[{label:"Emergency",number:"112"},{label:"Kiran Mental Health",number:"1800-599-0019"}],
+    GB:[{label:"Emergency",number:"999"},{label:"Samaritans",number:"116 123"}],
+    US:[{label:"Emergency",number:"911"},{label:"988 Suicide & Crisis Lifeline",number:"988"}],
+    ZA:[{label:"Emergency",number:"112"},{label:"SADAG Suicide Crisis Line",number:"0800 567 567"}],
+  };
+  function renderHelplines(code){
+    const list=HELPLINES[code]||[]; const card=document.createElement('div'); card.className='help-card';
+    card.innerHTML="<strong>Helplines:</strong><br>";
+    if(!list.length){ card.innerHTML+="No helplines configured for this country yet."; log.appendChild(card); return; }
+    list.forEach(it=>{
+      const a=document.createElement('a');
+      if(it.number){ a.href="tel:"+it.number.replace(/\s/g,''); a.textContent=`${it.label}: ${it.number}`; }
+      else{ a.href=it.href; a.target="_blank"; a.rel="noopener"; a.textContent=`${it.label} (website)`; }
+      a.style.display="block"; card.appendChild(a);
+    });
+    log.appendChild(card); log.scrollTop=log.scrollHeight;
+  }
+
+  // ---------- calming ----------
+  const CALMING = [
+    "Let’s do 4-7-8 breathing. Inhale 4… hold 7… exhale 8. I’ll count with you.",
+    "Try 5-4-3-2-1 grounding: 5 things you can see, 4 touch, 3 hear, 2 smell, 1 taste.",
+    "Box breathing. Inhale 4… hold 4… exhale 4… hold 4. Repeat a few rounds."
+  ];
+  function doCalm(){ const tip=CALMING[Math.floor(Math.random()*CALMING.length)]; addMsg(tip,'bot'); speak(tip); }
+
+  // ---------- location / maps ----------
+  function renderMap(lat, lon, addressText){
+    const card=document.createElement('div'); card.className='help-card';
+    const coords=`${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+    const gmapsLink=`https://www.google.com/maps?q=${lat},${lon}`;
+    card.innerHTML = `<strong>Your location</strong><br>${addressText?addressText+'<br>':''}Coords: ${coords}<br>
+      <a href="${gmapsLink}" target="_blank" rel="noopener">Open in Google Maps</a>`;
+    const iframe=document.createElement('iframe'); iframe.className='map';
+    iframe.src=`https://www.google.com/maps?q=${lat},${lon}&z=16&output=embed`;
+    card.appendChild(iframe); log.appendChild(card); log.scrollTop=log.scrollHeight;
+  }
+
+  async function reverseGeocode(lat, lon){
+    try{
+      const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+      const r=await fetch(url,{headers:{'Accept':'application/json','User-Agent':'voice-aid-demo'}});
+      const j=await r.json();
+      const countryCode=j?.address?.country_code?.toUpperCase() || null;
+      const display=j?.display_name || null;
+      return {countryCode, display};
+    }catch{ return {countryCode:null, display:null}; }
+  }
+
+  function askShareLocationFlow(promptOverride){
+    // If we already have location, skip straight to offering helplines
+    if (state.haveLocation) { return askHelplinesOffer(); }
+    if (state.askedLocation && !promptOverride) return; // avoid duplicate asks unless we want custom phrasing
+    state.askedLocation = true;
+    state.awaitingLocationConsent = true; // allow a plain "yes" to work
+
+    const msg = promptOverride || "Would you like me to show you exactly where you are? ";
+    addMsg(msg,'bot'); speak(msg);
+    addActions([
+      {label:"Share my location", onClick: ()=>{ state.awaitingLocationConsent=false; getLocationThenProceed(); }},
+      {label:"Not now", onClick: ()=> { state.awaitingLocationConsent=false; const t="Okay. You can still pick a country below or ask for calming."; addMsg(t,'bot'); speak(t);} }
+    ]);
+  }
+
+  function askHelplinesOffer(){
+    if (state.offeredHelplines) return;
+    state.offeredHelplines = true;
+    const q="Do you want me to show the nearest helplines?";
+    addMsg(q,'bot'); speak(q);
+    addActions([
+      {label:"Yes, show helplines", onClick: ()=> showHelplinesAndFollowUp() },
+      {label:"No, thanks", onClick: followUpCalm }
+    ]);
+  }
+
+  function showHelplinesAndFollowUp(){
+    if (state.showedHelplines) return;
+    renderHelplines(lastCountry || countrySel.value);
+    state.showedHelplines = true;
+    followUpCalm();
+  }
+
+  async function getLocationThenProceed(){
+    if (state.gettingLocation) return;  // prevent double fetch
+    state.gettingLocation = true;
+
+    if(!navigator.geolocation){
+      const t="Location not supported on this device. You can still choose your country.";
+      addMsg(t,'bot'); speak(t); state.gettingLocation=false; return;
+    }
+    addMsg("Getting your location…",'bot');
+    navigator.geolocation.getCurrentPosition(async (pos)=>{
+      const {latitude:lat, longitude:lon, accuracy} = pos.coords;
+      const rev = await reverseGeocode(lat, lon);
+      lastLocation = {lat, lon, accuracy, address:rev.display, country:rev.countryCode};
+      state.haveLocation = true; state.gettingLocation=false;
+
+      if(rev.countryCode){ lastCountry=rev.countryCode; if (HELPLINES[rev.countryCode]) countrySel.value = rev.countryCode; }
+      renderMap(lat, lon, rev.display);
+      askHelplinesOffer();
+    }, ()=>{
+      const t="I couldn't get your location. You can still pick your country from the dropdown.";
+      addMsg(t,'bot'); speak(t); state.gettingLocation=false;
+    }, {enableHighAccuracy:true, timeout:8000, maximumAge:0});
+  }
+
+  function followUpCalm(){
+    const q="Are you okay now, or would you like calming exercises?";
+    addMsg(q,'bot'); speak(q);
+    addActions([
+      {label:"I’m okay", onClick: ()=>{ addMsg("I’m glad you’re okay. I’m here if you need me again.",'bot'); }},
+      {label:"Calming exercises", onClick: doCalm }
+    ]);
+  }
+
+  // ---------- chat / Gemini ----------
+  async function askGemini(text){
+    try{
+      const res = await fetch("/chat", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ text })
+      });
+      const data = await res.json();
+      return data.reply || "I'm here. Let's take a slow breath together.";
+    }catch(e){
+      return "I’m here. If this is an emergency, please call your local emergency number now.";
+    }
+  }
+
+  // ---------- intent detectors ----------
+  const distressKeywords=["i am lost","im lost","help me","panic","scared","anxious","anxiety","i need help","can you help me","i feel unsafe","local helpline","helpline"];
+  function looksDistressed(t){ t=t.toLowerCase(); return distressKeywords.some(k=>t.includes(k)); }
+
+  // Voice/text commands
+  const locCmd = /(show|share|get)\s+(?:me\s+)?(?:my\s+)?location\b|\bwhere\s+am\s+i\b|\bwhat(?:'s| is)\s+my\s+location\b/i;
+  const nearestCmd = /\b(nearest|nearby)\s+helplines?\b|\bhelplines?\s+(near|around)\s+me\b|\bshow\s+(the\s+)?(nearest|nearby)\s+helplines?\b/i;
+
+  const yesish = /\b(yes|yeah|yep|yup|please|ok|okay|sure|show|go ahead)\b/i;
+  const noish  = /\b(no|nah|nope|not now|later)\b/i;
+
+  async function handleUserText(text){
+    if(!text) return; addMsg(text,'me');
+    const lower=text.toLowerCase();
+
+    // If we're waiting for location consent, a plain "yes" should get location
+    if (state.awaitingLocationConsent) {
+      if (yesish.test(lower)) { state.awaitingLocationConsent=false; await getLocationThenProceed(); return; }
+      if (noish.test(lower))  { state.awaitingLocationConsent=false; const t="Okay. You can still pick a country below or ask for calming."; addMsg(t,'bot'); speak(t); return; }
+    }
+
+    // Explicit “show my location”
+    if (locCmd.test(lower)) { await getLocationThenProceed(); return; }
+
+    // Explicit “nearest helplines”
+    if (nearestCmd.test(lower)) {
+      if (state.haveLocation) { showHelplinesAndFollowUp(); return; }
+      askShareLocationFlow(); return;
+    }
+
+    // If they answer the helpline offer
+    if (state.offeredHelplines && !state.showedHelplines) {
+      if (yesish.test(lower)) { showHelplinesAndFollowUp(); return; }
+      if (noish.test(lower))  { followUpCalm(); return; }
+    }
+
+    // Custom LOST script (your exact wording + emoji)
+    if (/\b(i'?m|i am)\s+lost\b/i.test(lower)) {
+      const line1 = "I'm sorry to hear that. Take a few slow, deep breaths. It's okay to feel this way. ";
+      addMsg(line1,'bot'); speak(line1);
+      // Ask with your preferred phrasing:
+      askShareLocationFlow("Would you like me to show you exactly where you are? ");
+      return;
+    }
+
+    // Generic helpline request
+    if (lower.includes("helpline")) {
+      if (state.haveLocation) { showHelplinesAndFollowUp(); return; }
+      askShareLocationFlow(); return;
+    }
+
+    // Other distress → reassurance + location consent
+    if (looksDistressed(lower)) {
+      const reply = await askGemini(text);
+      addMsg(reply,'bot'); speak(reply);
+      askShareLocationFlow("Would you like me to show you exactly where you are? ");
+      return;
+    }
+
+    // Calm intent
+    if (lower.includes("calm") || lower.includes("breath")) { doCalm(); return; }
+
+    // Default to Gemini
+    const reply = await askGemini(text);
+    addMsg(reply,'bot'); speak(reply);
+  }
+
+  // ---------- controls ----------
+  calmBtn.addEventListener('click', ()=>{ doCalm(); });
+  helpBtn.addEventListener('click', ()=>{ askShareLocationFlow(); });
+  sendBtn.addEventListener('click', ()=>{ handleUserText(typed.value.trim()); typed.value=""; });
+  typed.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ sendBtn.click(); } });
+
+  // ---------- STT with live captions ----------
+  let recognizing=false, recognition=null, interimEl=null;
+  function initSTT(){
+    if(!SpeechRecognition){ addMsg("Speech recognition not supported in this browser. You can type instead.","bot"); return; }
+    recognition=new SpeechRecognition(); recognition.lang="en-US"; recognition.interimResults=true; recognition.continuous=false;
+
+    recognition.onresult=(e)=>{
+      let final="", interim="";
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const t=e.results[i][0].transcript;
+        if(e.results[i].isFinal) final+=t; else interim+=t;
+      }
+      // live captions bubble
+      if (interim){
+        if(!interimEl){
+          const row=document.createElement('div'); row.className='row';
+          interimEl=document.createElement('div'); interimEl.className='msg me interim'; interimEl.textContent=interim;
+          row.appendChild(interimEl); log.appendChild(row);
+        } else {
+          interimEl.textContent=interim;
+        }
+        log.scrollTop=log.scrollHeight;
+      } else if (interimEl){
+        interimEl.remove(); interimEl=null;
+      }
+      if(final){
+        if(interimEl){ interimEl.remove(); interimEl=null; }
+        handleUserText(final.trim());
+      }
+    };
+    recognition.onerror=()=>{ micBtn.classList.remove('live'); recognizing=false; if(interimEl){interimEl.remove(); interimEl=null;} };
+    recognition.onend = ()=>{ micBtn.classList.remove('live'); recognizing=false; micBtn.textContent="🎤 Start"; if(interimEl){interimEl.remove(); interimEl=null;} };
+  }
+  micBtn.addEventListener('click',()=>{
+    if(!recognition) initSTT(); if(!recognition) return;
+    if(!recognizing){
+      recognizing=true; micBtn.textContent="🎤 Listening…"; micBtn.classList.add('live'); recognition.start();
+      setTimeout(()=>{ if(recognizing) recognition.stop(); }, 8000);
+    } else { recognition.stop(); }
+  });
+</script>
+
+</body>
+</html>

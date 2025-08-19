@@ -1,0 +1,256 @@
+:root {
+    --bg: #ffffff;
+    --soft: #f0f0f0;
+    --text: #000000;
+    --accent: #007bff; /* A standard blue */
+    --good: #28a745; /* A standard green */
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.voice-aid-widget-body {
+    margin: 0;
+    background: var(--bg);
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.widget-launcher {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: #fff;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    z-index: 9999;
+    transition: transform 0.2s ease-in-out;
+}
+
+.widget-launcher:hover {
+    transform: scale(1.05);
+}
+
+.pulse {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--good);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 12px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+.panel-wrap {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    width: 360px;
+    max-width: calc(100vw - 40px);
+    transform-origin: 100% 100%;
+    scale: .96;
+    opacity: 0;
+    pointer-events: none;
+    transition: .18s ease;
+    z-index: 9998;
+}
+
+.panel-wrap.open {
+    scale: 1;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.panel {
+    background: var(--bg);
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--soft);
+    border-bottom: 1px solid #ddd;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 1.1em;
+    letter-spacing: .2px;
+    color: var(--text);
+}
+
+.close-btn {
+    background: transparent;
+    color: #888;
+    border: 1px solid transparent;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.scroll {
+    padding: 14px 16px;
+    max-height: 54vh;
+    overflow: auto;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 8px 0;
+}
+
+.msg {
+    padding: 12px 15px;
+    background: var(--soft);
+    border: none;
+    border-radius: 15px;
+    line-height: 1.4;
+    flex: 1;
+    white-space: pre-wrap;
+    color: var(--text);
+}
+
+.me {
+    background: var(--accent);
+    color: #fff;
+}
+
+.bot {
+    background: var(--soft);
+}
+
+.me.interim {
+    opacity: .7;
+    font-style: italic;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    border-top: 1px solid #ddd;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    flex: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #eee;
+    color: #000;
+    border: 1px solid #ccc;
+    transition: background-color 0.2s;
+}
+
+.control-btn:hover {
+    background-color: #ddd;
+}
+
+.mic.live {
+    background: var(--good);
+    border-color: var(--good);
+    color: #fff;
+}
+
+.field {
+    flex: 1;
+    min-width: 160px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #000;
+}
+
+.select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+}
+
+.help-card {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--soft);
+    border: 1px solid #ddd;
+}
+
+.help-card a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.help-card a:hover {
+    text-decoration: underline;
+}
+
+.action-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.small-btn {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #eee;
+    color: #000;
+    cursor: pointer;
+}
+
+.small-btn:hover {
+    background: #ddd;
+}
+
+iframe.map {
+    width: 100%;
+    height: 220px;
+    border: 0;
+    border-radius: 12px;
+    margin-top: 8px;
+}

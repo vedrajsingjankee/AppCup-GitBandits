@@ -1,7 +1,6 @@
-# AppCup-GitBandits/wanderwise/src/App.css
-# Global styles for the application
+/* Global styles for the application */
 
-# Root element styling
+/* Root element styling */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -9,7 +8,7 @@
   text-align: center;
 }
 
-# Logo styling
+/* Logo styling */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -23,7 +22,7 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-# Keyframes for logo spin animation
+/* Keyframes for logo spin animation */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -33,19 +32,19 @@
   }
 }
 
-# Animation preference for reduced motion
+/* Animation preference for reduced motion */
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
 }
 
-# Card styling
+/* Card styling */
 .card {
   padding: 2em;
 }
 
-# Read the docs styling
+/* Read the docs styling */
 .read-the-docs {
   color: #888;
 }
