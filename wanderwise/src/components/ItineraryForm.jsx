@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 
 const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
   const [formData, setFormData] = useState({
-    startDate: '',
-    endDate: '',
+    region: '',
     travelers: 1,
     budget: 'medium',
     interests: [],
     accommodation: 'any',
     dietary: 'none',
+    disabilityAccess: false,
     specialRequests: ''
   });
   
@@ -26,8 +26,20 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
     { id: 'sports', label: 'Sports', icon: '🏄' }
   ];
 
+  const regions = [
+    { id: 'north', label: 'North' },
+    { id: 'south', label: 'South' },
+    { id: 'east', label: 'East' },
+    { id: 'west', label: 'West' },
+    { id: 'central', label: 'Central' },
+    { id: 'northeast', label: 'Northeast' },
+    { id: 'northwest', label: 'Northwest' },
+    { id: 'southeast', label: 'Southeast' },
+    { id: 'southwest', label: 'Southwest' }
+  ];
+
   const handleInputChange = (e) => {
-    const { name, value, type } = e.target;
+    const { name, value, type, checked } = e.target;
     
     if (type === 'checkbox' && name === 'interests') {
       const updatedInterests = formData.interests.includes(value)
@@ -35,6 +47,8 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
         : [...formData.interests, value];
       
       setFormData(prev => ({ ...prev, interests: updatedInterests }));
+    } else if (type === 'checkbox' && name === 'disabilityAccess') {
+      setFormData(prev => ({ ...prev, disabilityAccess: checked }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -96,36 +110,23 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Travel Dates */}
-          <div className="grid grid-cols-1 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                📅 Start Date
-              </label>
-              <input
-                type="date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleInputChange}
-                min={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                📅 End Date
-              </label>
-              <input
-                type="date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleInputChange}
-                min={formData.startDate}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                required
-              />
-            </div>
+          {/* Region Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              🌍 Region
+            </label>
+            <select
+              name="region"
+              value={formData.region}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
+              required
+            >
+              <option value="">Select a region</option>
+              {regions.map(region => (
+                <option key={region.id} value={region.id}>{region.label}</option>
+              ))}
+            </select>
           </div>
 
           {/* Travelers and Budget */}
@@ -138,7 +139,7 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
                 name="travelers"
                 value={formData.travelers}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
               >
                 {[1, 2, 3, 4, 5, 6].map(num => (
                   <option key={num} value={num}>{num} {num === 1 ? 'Traveler' : 'Travelers'}</option>
@@ -153,13 +154,27 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
                 name="budget"
                 value={formData.budget}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
               >
                 <option value="budget">Budget</option>
                 <option value="medium">Mid-Range</option>
                 <option value="luxury">Luxury</option>
               </select>
             </div>
+          </div>
+
+          {/* Disability Access */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              name="disabilityAccess"
+              checked={formData.disabilityAccess}
+              onChange={handleInputChange}
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label className="ml-2 block text-sm text-gray-700">
+              ♿ Disability Access Required
+            </label>
           </div>
 
           {/* Interests */}
@@ -186,7 +201,7 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
                     className="sr-only"
                   />
                   <span className="text-lg mb-1">{interest.icon}</span>
-                  <span className="font-medium">{interest.label}</span>
+                  <span className="font-medium text-black">{interest.label}</span>
                 </label>
               ))}
             </div>
@@ -202,7 +217,7 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
                 name="accommodation"
                 value={formData.accommodation}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
               >
                 <option value="any">Any</option>
                 <option value="hotel">Hotel</option>
@@ -219,7 +234,7 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
                 name="dietary"
                 value={formData.dietary}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
               >
                 <option value="none">None</option>
                 <option value="vegetarian">Vegetarian</option>
@@ -241,7 +256,7 @@ const ItineraryForm = ({ onItineraryGenerated, isModal = false, onClose }) => {
               value={formData.specialRequests}
               onChange={handleInputChange}
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black"
               placeholder="Any special requirements..."
             />
           </div>

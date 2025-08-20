@@ -44,7 +44,7 @@ export default function Hero() {
         <div className="md:flex md:items-center md:justify-between gap-8 relative z-10">
           <div className="md:flex-1">
             <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight leading-tight mb-2">
-              Wander.<span className="text-sky-500">Wise</span>
+               <span className="text-black">Mauri.</span><span className="text-sky-500">Quest</span>
             </h1>
             <p className="mt-3 text-slate-600 dark:text-slate-300 max-w-xl text-lg font-medium">
               Plan trips fast. Discover beautiful places. Save favorites. Play with the UI. Tap random to spark ideas.
@@ -63,13 +63,13 @@ export default function Hero() {
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 placeholder="Search city or country"
-                className="col-span-1 sm:col-span-2 p-3 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/80 text-base focus:ring-2 focus:ring-sky-300 transition"
+                 className="col-span-1 sm:col-span-2 p-3 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/80 text-base focus:ring-2 focus:ring-sky-300 transition text-black"
               />
               <input
                 placeholder="Date"
-                className="col-span-1 p-3 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/80 text-base focus:ring-2 focus:ring-sky-300 transition"
+ className="col-span-1 sm:col-span-2 p-3 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/80 text-base focus:ring-2 focus:ring-sky-300 transition text-black"
               />
-              <select className="col-span-1 p-3 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/80 text-base focus:ring-2 focus:ring-sky-300 transition">
+              <select  className="col-span-1 sm:col-span-2 p-3 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/80 text-base focus:ring-2 focus:ring-sky-300 transition text-black">
                 <option>2 people</option>
                 <option>1 person</option>
                 <option>4 people</option>
@@ -100,13 +100,13 @@ export default function Hero() {
 
             <div className="mt-6 flex gap-4 items-center">
               <div className="w-28 h-16 rounded-xl bg-gradient-to-br from-sky-200 to-teal-200 flex items-center justify-center text-base font-semibold shadow-md transition-transform duration-300 hover:scale-105 hover:rotate-1" style={{ willChange: 'transform' }}>
-                Surfer beach
+                <span className="text-black">Surfer Beach</span>
               </div>
               <div className="w-28 h-16 rounded-xl bg-gradient-to-br from-pink-200 to-amber-200 flex items-center justify-center text-base font-semibold shadow-md transition-transform duration-300 hover:scale-105 hover:-rotate-1" style={{ willChange: 'transform' }}>
-                City break
+                <span className="text-black">City Tour</span>
               </div>
               <div className="w-28 h-16 rounded-xl bg-gradient-to-br from-emerald-200 to-sky-200 flex items-center justify-center text-base font-semibold shadow-md transition-transform duration-300 hover:scale-105 hover:rotate-2" style={{ willChange: 'transform' }}>
-                Nature
+                <span className="text-black">Nature</span>
               </div>
             </div>
           </div>

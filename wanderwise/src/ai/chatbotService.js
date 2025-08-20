@@ -19,9 +19,9 @@ export async function getChatbotResponse(message) {
 
     const data = await response.json();
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    return reply || "Hi, I'm WanderWise! How can I help you plan your trip?";
+    return reply || "Hi, I'm MauriQuest! How can I help you plan your trip?";
   } catch (error) {
     console.error('Error communicating with Gemini:', error);
-    return "Sorry, WanderWise couldn't get a response.";
+    return "Sorry, MauriQuest couldn't get a response.";
   }
 }

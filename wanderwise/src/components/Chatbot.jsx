@@ -42,7 +42,7 @@ const PlaneIcon = () => (
 
 export default function Chatbot({ onClose }) {
   const [messages, setMessages] = useState([
-    { from: 'bot', text: '🌍 Hi traveler! I\'m your WanderWise travel assistant. Ask me about destinations, flights, hotels, or travel tips!' }
+    { from: 'bot', text: '🌍 Hi traveler! I\'m your MauriQuest travel assistant. Ask me about destinations, flights, hotels, or travel tips!' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -99,7 +99,7 @@ export default function Chatbot({ onClose }) {
           <div className="p-2 bg-blue-100 rounded-full">
             <PlaneIcon />
           </div>
-          <span className="font-bold text-blue-600">WanderWise Travel Assistant</span>
+          <span className="font-bold text-blue-600">MauriQuest Travel Assistant</span>
         </div>
         <button 
           onClick={onClose}

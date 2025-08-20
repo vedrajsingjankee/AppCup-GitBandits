@@ -183,7 +183,7 @@ export default function Header() {
             </div>
             <div>
               <div className="font-extrabold text-xl tracking-tight text-slate-800 flex items-center gap-1">
-                WanderWise
+                MauriQuest
                 <span className="text-base animate-bounce">🎈</span>
               </div>
               <div className="text-xs text-slate-500 italic flex items-center gap-1 font-medium">

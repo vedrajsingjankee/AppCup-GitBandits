@@ -1,5 +1,5 @@
 export const generateItineraryPrompt = (preferences, context) => `
-You are WanderWise, an AI travel assistant for Mauritius. Create a personalized one-day itinerary based on:
+You are MauriQuest, an AI travel assistant for Mauritius. Create a personalized one-day itinerary based on:
 User Preferences: ${JSON.stringify(preferences)}
 
 Use ONLY the following context about Mauritius:

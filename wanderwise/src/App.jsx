@@ -8,6 +8,7 @@ import ChatbotIcon from './components/ChatbotIcon';
 import VoiceAidWidget from './components/VoiceAidWidget';
 import ItineraryForm from './components/ItineraryForm';
 import ItineraryResults from './components/ItineraryResults';
+import ASLDemo from './components/ASLDemo';
 import { GoogleGenAI } from "https://esm.sh/@google/genai";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -20,6 +21,7 @@ export default function App() {
   const [showItineraryResults, setShowItineraryResults] = useState(false);
   const [itineraryData, setItineraryData] = useState(null);
   const [showOptions, setShowOptions] = useState(false);
+  const [showASLDemo, setShowASLDemo] = useState(false);
 
   const handleIconClick = () => {
     setShowOptions(!showOptions);
@@ -31,9 +33,16 @@ export default function App() {
       setShowChatbot(true);
       setShowVoiceAid(false);
       setShowItineraryForm(false);
+      setShowASLDemo(false);
     } else if (option === 'voice') {
       setShowVoiceAid(true);
       setShowChatbot(false);
+      setShowItineraryForm(false);
+      setShowASLDemo(false);
+    } else if (option === 'asl') {
+      setShowASLDemo(true);
+      setShowChatbot(false);
+      setShowVoiceAid(false);
       setShowItineraryForm(false);
     }
   };
@@ -43,6 +52,7 @@ export default function App() {
     setShowVoiceAid(false);
     setShowItineraryForm(false);
     setShowItineraryResults(false);
+    setShowASLDemo(false);
   };
 
   const handleItineraryGenerated = (data) => {
@@ -64,7 +74,6 @@ export default function App() {
       }}
     >
       <P5TravelBg />
-      {/* Overlay for tropical effect */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -79,18 +88,17 @@ export default function App() {
           <ItineraryForm onItineraryGenerated={handleItineraryGenerated} />
         </div>
         <ImageUploader />
+        <ASLDemo />
         <Destinations />
       </main>
       <Footer />
 
-      {/* floating menu icon */}
       <ChatbotIcon 
         onClick={handleIconClick} 
         showOptions={showOptions}
         onOptionSelect={handleOptionSelect}
       />
 
-      {/* chat panel */}
       {showChatbot && (
         <div
           className="fixed bottom-24 right-8 z-50"
@@ -104,7 +112,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Voice Aid Widget */}
       {showVoiceAid && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center"
@@ -129,12 +136,35 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {showASLDemo && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(2,6,23,0.55)' }}
+          onClick={handleClose}
+        >
+          <div
+            className="relative"
+            style={{ width: 'min(900px, 95vw)', height: 'min(700px, 90vh)' }}
+            onClick={(e)=> e.stopPropagation()}
+          >
+            <ASLDemo />
+            <button
+              onClick={handleClose}
+              aria-label="Close"
+              style={{
+                position: 'absolute', top: -12, right: -12,
+                width: 36, height: 36, borderRadius: 9999, border: 'none', cursor: 'pointer',
+                background: '#0f172a', color: '#fff', boxShadow: '0 6px 16px rgba(2,6,23,.4)'
+              }}
+            >✕</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// ... rest of your App.jsx code (PalmSVG, ImageUploader, etc.)
-// --- Static SVG Palm Tree for tropical vibe ---
 function PalmSVG() {
   return (
     <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
@@ -147,14 +177,12 @@ function PalmSVG() {
   );
 }
 
-// --- Fireship-style ImageUploader ---
 const ImageUploader = () => {
   const [result, setResult] = useState(null);
   const [coordinates, setCoordinates] = useState(null);
 
   const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
-  // Convert file to Base64
   const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -163,7 +191,6 @@ const ImageUploader = () => {
       reader.readAsDataURL(file);
     });
 
-  // AI response schema
   const schema = {
     type: "object",
     properties: {
@@ -177,7 +204,6 @@ const ImageUploader = () => {
     required: ["confidence"],
   };
 
-  // Build query string from AI result
   const getLocationQuery = (result) => {
     const parts = [
       result.landmarkCandidates?.[0],
@@ -187,7 +213,6 @@ const ImageUploader = () => {
     return parts.join(", ");
   };
 
-  // Fetch coordinates from OpenStreetMap
   const fetchCoordinates = async (query) => {
     if (!query) return null;
 
@@ -205,7 +230,6 @@ const ImageUploader = () => {
     };
   };
 
-  // Analyze image using AI
   const analyzeImage = async (file) => {
     const base64 = await fileToBase64(file);
 
@@ -235,7 +259,6 @@ const ImageUploader = () => {
     }
     setResult(data);
 
-    // --- New: Get map coordinates ---
     const locationQuery = getLocationQuery(data);
     const coords = await fetchCoordinates(locationQuery);
     setCoordinates(coords);
@@ -255,7 +278,6 @@ const ImageUploader = () => {
         zIndex: 1,
       }}
     >
-      {/* Subtle floating accent */}
       <div
         style={{
           position: "absolute",
@@ -283,7 +305,6 @@ const ImageUploader = () => {
         }}
       />
 
-      {/* Professional header */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -323,7 +344,6 @@ const ImageUploader = () => {
         </div>
       </div>
 
-      {/* Animated upload button */}
       <div style={{ padding: "0 2.5rem 2.5rem 2.5rem", zIndex: 2, position: "relative" }}>
         <label
           htmlFor="file-upload"
@@ -366,7 +386,6 @@ const ImageUploader = () => {
           />
         </label>
 
-        {/* AI Analysis Results */}
         {result && (
           <div
             className="space-y-3 mt-8"
@@ -418,7 +437,6 @@ const ImageUploader = () => {
           </div>
         )}
 
-        {/* Map Display */}
         {coordinates && (
           <div className="mt-10 relative" style={{ animation: "fadeInUp 0.7s cubic-bezier(.4,2,.6,1)" }}>
             <h3 className="text-lg font-bold mb-3" style={{
@@ -466,7 +484,6 @@ const ImageUploader = () => {
         )}
       </div>
 
-      {/* Animation keyframes */}
       <style>
         {`
           @keyframes fadeInUp {

@@ -38,19 +38,17 @@ export default function Destinations() {
                     }}
                 >
                     <span role="img" aria-label="star" style={{ fontSize: 22, marginRight: 8 }}>🌟</span>
-                    <span>Popular Places</span>
+                    <span classNmae="text-black">Popular Places</span>
                 </div>
-                <input
-                    value={q}
-                    onChange={e => setQ(e.target.value)}
-                    placeholder="Filter by name"
-                    className="px-4 py-2 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/90 text-base font-medium focus:ring-2 focus:ring-sky-300 transition text-slate-700 dark:text-slate-100"
-                    style={{
-                        minWidth: 180,
-                        boxShadow: "0 1px 4px #38bdf822",
-                        color: "inherit"
-                    }}
-                />
+             <input
+  value={q}
+  onChange={e => setQ(e.target.value)}
+  placeholder="Filter by name"
+  className="col-span-1 sm:col-span-2 p-3 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/80 text-base focus:ring-2 focus:ring-sky-300 transition text-black"
+  style={{
+    minWidth: 180,
+  }}
+/>
                 <button
                     onClick={() => setQ('')}
                     className="px-4 py-2 rounded-lg border border-slate-200 bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-100 font-semibold shadow transition-all duration-150 hover:scale-105 hover:bg-sky-50 hover:border-sky-400 focus:outline-none"
@@ -59,7 +57,7 @@ export default function Destinations() {
                         color: "inherit"
                     }}
                 >
-                    Reset
+                    <span className="text-black">Reset</span>
                 </button>
                 <span className="ml-auto text-sm font-medium text-slate-500 dark:text-slate-300">
                     Tip: Try "Le Morne"
