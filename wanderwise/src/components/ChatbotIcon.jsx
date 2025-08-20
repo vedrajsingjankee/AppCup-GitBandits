@@ -42,7 +42,7 @@ export default function ChatbotIcon({ onClick, showOptions, onOptionSelect }) {
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            💬 Chat Assistant
+            <span className="text-black">💬 Chat Assistant</span>
           </button>
           <button 
             className="option-button voice"
