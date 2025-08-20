@@ -6,6 +6,8 @@ import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
 import ChatbotIcon from './components/ChatbotIcon';
 import VoiceAidWidget from './components/VoiceAidWidget';
+import ItineraryForm from './components/ItineraryForm';
+import ItineraryResults from './components/ItineraryResults';
 import { GoogleGenAI } from "https://esm.sh/@google/genai";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -14,6 +16,9 @@ import P5TravelBg from './components/P5TravelBg.jsx';
 export default function App() {
   const [showChatbot, setShowChatbot] = useState(false);
   const [showVoiceAid, setShowVoiceAid] = useState(false);
+  const [showItineraryForm, setShowItineraryForm] = useState(false);
+  const [showItineraryResults, setShowItineraryResults] = useState(false);
+  const [itineraryData, setItineraryData] = useState(null);
   const [showOptions, setShowOptions] = useState(false);
 
   const handleIconClick = () => {
@@ -25,15 +30,29 @@ export default function App() {
     if (option === 'chat') {
       setShowChatbot(true);
       setShowVoiceAid(false);
+      setShowItineraryForm(false);
     } else if (option === 'voice') {
       setShowVoiceAid(true);
       setShowChatbot(false);
+      setShowItineraryForm(false);
     }
   };
 
   const handleClose = () => {
     setShowChatbot(false);
     setShowVoiceAid(false);
+    setShowItineraryForm(false);
+    setShowItineraryResults(false);
+  };
+
+  const handleItineraryGenerated = (data) => {
+    setItineraryData(data);
+    setShowItineraryResults(true);
+  };
+
+  const handleRegenerateItinerary = () => {
+    setShowItineraryResults(false);
+    setShowItineraryForm(true);
   };
 
   return (
@@ -56,6 +75,9 @@ export default function App() {
       <Header />
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <Hero />
+        <div className="my-12">
+          <ItineraryForm onItineraryGenerated={handleItineraryGenerated} />
+        </div>
         <ImageUploader />
         <Destinations />
       </main>

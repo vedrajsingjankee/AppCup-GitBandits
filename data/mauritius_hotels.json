@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "LUX Grand Gaube",
+    "type": "luxury",
+    "description": "5-star beachfront resort with panoramic ocean views",
+    "location": "Grand Gaube",
+    "price_range": "$$$$",
+    "tags": ["spa", "gourmet-dining", "adults-only"]
+  },
+  {
+    "id": 2,
+    "name": "Veranda Tamarin",
+    "type": "mid-range",
+    "description": "Modern hotel with surf-friendly location and sunset views",
+    "location": "Tamarin",
+    "price_range": "$$",
+    "tags": ["surfing", "sunset", "family-friendly"]
+  },
+  {
+    "id": 3,
+    "name": "Zilwa Attitude",
+    "type": "cultural",
+    "description": "Authentic Mauritian experience with local cuisine and activities",
+    "location": "Calodyne",
+    "price_range": "$$$",
+    "tags": ["local-culture", "beach", "all-inclusive"]
+  }
+]

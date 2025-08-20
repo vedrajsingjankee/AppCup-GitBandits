@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "name": "Le Morne Brabant",
+    "type": "nature",
+    "description": "UNESCO World Heritage site with dramatic mountain views and historical significance",
+    "location": "Le Morne",
+    "best_time": "sunrise",
+    "duration": "3-4 hours",
+    "difficulty": "moderate",
+    "tags": ["hiking", "history", "views"]
+  },
+  {
+    "id": 2,
+    "name": "Chamarel Seven Colored Earth",
+    "type": "nature",
+    "description": "Unique geological formation with sand of seven distinct colors",
+    "location": "Chamarel",
+    "best_time": "morning",
+    "duration": "1-2 hours",
+    "tags": ["geology", "family-friendly", "photo-spot"]
+  },
+  {
+    "id": 3,
+    "name": "Port Louis Market",
+    "type": "culture",
+    "description": "Vibrant local market with fresh produce, spices, and crafts",
+    "location": "Port Louis",
+    "best_time": "morning",
+    "duration": "2-3 hours",
+    "tags": ["shopping", "food", "local-culture"]
+  },
+  {
+    "id": 4,
+    "name": "Ile aux Cerfs",
+    "type": "beach",
+    "description": "Pristine island with white sandy beaches and water sports",
+    "location": "East Coast",
+    "best_time": "all-day",
+    "duration": "4-6 hours",
+    "tags": ["snorkeling", "relaxation", "boat-trip"]
+  },
+  {
+    "id": 5,
+    "name": "La Vanille Nature Park",
+    "type": "wildlife",
+    "description": "Home to giant tortoises, crocodiles, and tropical insects",
+    "location": "Rivière des Anguilles",
+    "best_time": "morning",
+    "duration": "2-3 hours",
+    "tags": ["animals", "family", "educational"]
+  }
+]
