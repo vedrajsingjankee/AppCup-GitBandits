@@ -43,14 +43,17 @@ class RAGService {
       const top = (attractionsContext || []).slice(0, 3);
       return {
         destination: preferences?.location || 'Mauritius',
-        summary: 'Personalized one-day plan based on available context.',
+        summary: `A one-day plan in ${preferences?.location || 'Mauritius'} tailored to your interests.`,
         itinerary: top.map((item, idx) => ({
-          time: idx === 0 ? 'Morning (8:00 AM - 12:00 PM)' : idx === 1 ? 'Afternoon (1:00 PM - 5:00 PM)' : 'Evening (6:00 PM onwards)',
-          activity: item?.metadata?.activity || 'Explore local attraction',
+          title: item?.metadata?.name || 'Attraction',
+          time: idx === 0 ? '09:00' : idx === 1 ? '13:00' : '17:30',
+          activity: item?.metadata?.activity || 'Sightseeing',
           location: item?.metadata?.location || (preferences?.location || 'Mauritius'),
-          description: item?.content?.slice(0, 200) || 'Enjoy a local highlight based on your preferences.',
+          description: item?.metadata?.description || item?.content?.slice(0, 200) || 'Enjoy a local highlight based on your preferences.',
           duration: idx === 2 ? '2-3 hours' : '3-4 hours',
-          accessible_features: item?.metadata?.features || []
+          accessible_features: item?.metadata?.features || [],
+          tips: item?.metadata?.tips || [],
+          guide: item?.metadata?.guide || ''
         })),
         hotel_recommendation: {
           name: hotelsContext?.[0]?.metadata?.name || 'Local Hotel',
@@ -93,7 +96,9 @@ class RAGService {
           type: item?.metadata?.type || 'Attraction',
           description: item?.content?.slice(0, 160) || 'A local highlight worth visiting.',
           best_time: item?.metadata?.best_time || 'Morning',
-          location: item?.metadata?.location || 'Mauritius'
+          location: item?.metadata?.location || 'Mauritius',
+          tips: item?.metadata?.tips || [],
+          guide: item?.metadata?.guide || ''
         }))
       };
     }
